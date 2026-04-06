@@ -97,12 +97,12 @@ namespace NL_SERVER
             {
                 context.Response.Headers["Content-Type"] = "image/png";
                 // Serve default avatar byte[]
-                await context.Response.Body.WriteAsync(new byte[] { 0x89, 0x50, 0x4e, 0x47 }); // Stub
+                await context.Response.Body.WriteAsync(AvatarData.Bytes);
             });
             app.MapGet("/getavatar", async context => 
             {
                 context.Response.Headers["Content-Type"] = "image/png";
-                await context.Response.Body.WriteAsync(new byte[] { 0x89, 0x50, 0x4e, 0x47 }); // Stub
+                await context.Response.Body.WriteAsync(AvatarData.Bytes);
             });
 
             app.MapGet("/api/sendlog", () => new { success = true });
