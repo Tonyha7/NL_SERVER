@@ -263,14 +263,23 @@ namespace NL_SERVER
 
             while (ws.State == WebSocketState.Open)
             {
-                var result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                using var ms = new MemoryStream();
+                WebSocketReceiveResult result;
+                do
+                {
+                    result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                    if (result.MessageType == WebSocketMessageType.Close)
+                        break;
+                    
+                    ms.Write(buffer, 0, result.Count);
+                } while (!result.EndOfMessage);
+
                 if (result.MessageType == WebSocketMessageType.Close)
                     break;
                 
                 if (result.MessageType == WebSocketMessageType.Binary)
                 {
-                    var data = new byte[result.Count];
-                    Array.Copy(buffer, data, result.Count);
+                    var data = ms.ToArray();
                     
                     try 
                     {
